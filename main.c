@@ -22,6 +22,7 @@ void	*life_philo(void *arg)
 	ft_putnbr_fd(philo->id, 1);
 	ft_putchar_fd('\n', 1);
 	ft_putnbr_fd(philo->left_fork, 1);
+	ft_putchar_fd(' ', 1);
 	ft_putnbr_fd(philo->right_fork, 1);
 	ft_putchar_fd('\n', 1);
 	ft_putchar_fd('\n', 1);
