@@ -1,5 +1,6 @@
 #include "includes/philo.h"
 
+//mutex для блокировки взятия вилок
 pthread_mutex_t entry_point = PTHREAD_MUTEX_INITIALIZER;
 
 void	*life_philo(void *arg)
