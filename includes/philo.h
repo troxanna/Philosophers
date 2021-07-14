@@ -23,6 +23,7 @@ typedef struct		s_philo
 	pthread_t	pt;
 	int	left_fork;
 	int	right_fork;
+	long	start_eat;
 }					t_philo;
 
 typedef struct	s_table
@@ -34,8 +35,8 @@ typedef struct s_all
 {
 	t_philo		*philo;
 	t_table		*table;
-	long		start;
 	t_input		*input;
+	int			death;
 }				t_all;
 
 void	ft_error(int err);

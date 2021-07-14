@@ -3,6 +3,11 @@
 //mutex для блокировки взятия вилок
 pthread_mutex_t entry_point = PTHREAD_MUTEX_INITIALIZER;
 
+void	print_message(char *str, int nb)
+{
+	//
+}
+
 void	*life_philo(void *arg)
 {
 	t_all *args;
@@ -15,19 +20,33 @@ void	*life_philo(void *arg)
 	// EAT
 	pthread_mutex_lock(&entry_point);
 	pthread_mutex_lock(&table->forks[philo->left_fork]);
-	ft_usleep(30);
+	ft_usleep(10);
 	pthread_mutex_lock(&table->forks[philo->right_fork]);
 	pthread_mutex_unlock(&entry_point);
 	ft_putstr_fd("philo eat\n", 1);
-	ft_putnbr_fd(philo->id, 1);
-	ft_putchar_fd('\n', 1);
-	ft_putnbr_fd(philo->left_fork, 1);
-	ft_putchar_fd(' ', 1);
-	ft_putnbr_fd(philo->right_fork, 1);
-	ft_putchar_fd('\n', 1);
-	ft_putchar_fd('\n', 1);
+	//разобраться с get_time
+	philo->start_eat = get_time(args->input->time_to_eat);
+	ft_usleep(args->input->time_to_eat);
+	// ft_putstr_fd("philo eat\n", 1);
+	// ft_putnbr_fd(philo->id, 1);
+	// ft_putchar_fd('\n', 1);
+	// ft_putnbr_fd(philo->left_fork, 1);
+	// ft_putchar_fd(' ', 1);
+	// ft_putnbr_fd(philo->right_fork, 1);
+	// ft_putchar_fd('\n', 1);
+	// ft_putchar_fd('\n', 1);
 	pthread_mutex_unlock(&table->forks[philo->right_fork]);
 	pthread_mutex_unlock(&table->forks[philo->left_fork]);
+
+	//pthread_mutex_lock(&message);
+	//SLEEP
+	//print_message(char *str, int nb)
+	//pthread_mutex_unlock(&message);
+
+	//pthread_mutex_lock(&message);
+	//THINK
+	//print_message(char *str, int nb)
+	//pthread_mutex_unlock(&message);
 }
 
 void	pthread_exec(t_all *args, int count)
@@ -67,16 +86,7 @@ int		main(int argc, char **argv)
 	init_philo(&philo[i], i, 0, i + 1);
 	args = init_all_args(philo, &table, &input);
 	pthread_exec(args, input.num_of_philo);
-	// i = -1;
-	// while (philo[++i])
-	// {
-	// 	ft_putnbr_fd(philo[i]->id, 1);
-	// 	ft_putchar_fd('\n', 1);
-	// 	ft_putnbr_fd(philo[i]->left_fork, 1);
-	// 	ft_putnbr_fd(philo[i]->right_fork, 1);
-	// 	ft_putchar_fd('\n', 1);
-	// 	ft_putchar_fd('\n', 1);
-	// }
+	//отдельный поток на отслеживание смерти
 
 	//free philo
 	//free forks
