@@ -1,11 +1,24 @@
 #include "includes/philo.h"
-
+//volatile int start;
+int start;
 //mutex для блокировки взятия вилок
 pthread_mutex_t entry_point = PTHREAD_MUTEX_INITIALIZER;
 
-void	print_message(char *str, int nb)
+void	print_message(char *str, int id)
 {
-	//
+	long current_time;
+
+	gettimeofday(&current_time, NULL);
+	ft_putnbr_fd(current_time, 1);
+	ft_putchar_fd(' ', 1);
+	ft_putnbr_fd(id, 1);
+	ft_putchar_fd(' ', 1);
+	ft_putstr_fd(str, 1);
+	ft_putchar_fd('\n', 1);
+	// timestamp_in_ms X message
+	//текущее время
+	//id философа
+	// сообщение (is eating, is sleeping, is thinking, has taken a fork, died)
 }
 
 void	*life_philo(void *arg)
@@ -18,25 +31,23 @@ void	*life_philo(void *arg)
 	table = args->table;
 	philo = args->philo;
 	// EAT
+	while (!start)
+		;
+	//счетчик, чтобы лишний раз не вызывать lock/unlock (?)
 	pthread_mutex_lock(&entry_point);
 	pthread_mutex_lock(&table->forks[philo->left_fork]);
-	ft_usleep(10);
+	print_message("has taken a fork", philo->id);
+	//ft_usleep(10);
 	pthread_mutex_lock(&table->forks[philo->right_fork]);
-	pthread_mutex_unlock(&entry_point);
-	ft_putstr_fd("philo eat\n", 1);
-	//разобраться с get_time
+	print_message("has taken a fork", philo->id);
 	philo->start_eat = get_time(args->input->time_to_eat);
+	print_message("is eating", philo->id);
+	pthread_mutex_unlock(&entry_point);
 	ft_usleep(args->input->time_to_eat);
-	// ft_putstr_fd("philo eat\n", 1);
-	// ft_putnbr_fd(philo->id, 1);
-	// ft_putchar_fd('\n', 1);
-	// ft_putnbr_fd(philo->left_fork, 1);
-	// ft_putchar_fd(' ', 1);
-	// ft_putnbr_fd(philo->right_fork, 1);
-	// ft_putchar_fd('\n', 1);
-	// ft_putchar_fd('\n', 1);
 	pthread_mutex_unlock(&table->forks[philo->right_fork]);
 	pthread_mutex_unlock(&table->forks[philo->left_fork]);
+	// ft_usleep(50);
+	// print_message("is sleeping", philo->id);
 
 	//pthread_mutex_lock(&message);
 	//SLEEP
@@ -49,6 +60,11 @@ void	*life_philo(void *arg)
 	//pthread_mutex_unlock(&message);
 }
 
+void	*check_dead(void *arg)
+{
+	
+}
+
 void	pthread_exec(t_all *args, int count)
 {
 	int	i;
@@ -56,6 +72,7 @@ void	pthread_exec(t_all *args, int count)
 	i = -1;
 	while (++i < count)
         pthread_create(&args[i].philo->pt, NULL, life_philo, &args[i]);
+	start = 1;
 	i = -1;
 	while (++i < count)
         pthread_join(args[i].philo->pt, NULL);
@@ -82,12 +99,14 @@ int		main(int argc, char **argv)
 	init_table(&table, input.num_of_philo);
 	while (++i < input.num_of_philo - 1)
 		init_philo(&philo[i], i, i + 1, i + 1);
-	//обработать вилки для последнего философа
+	//раздавать вилки четным/нечетным
 	init_philo(&philo[i], i, 0, i + 1);
 	args = init_all_args(philo, &table, &input);
+	start = 0;
 	pthread_exec(args, input.num_of_philo);
 	//отдельный поток на отслеживание смерти
-
+	pthread_create(&args->death, NULL, check_dead, (void *)args);
+	pthread_join(args->death, NULL);
 	//free philo
 	//free forks
 	//free

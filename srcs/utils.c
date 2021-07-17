@@ -1,11 +1,12 @@
 #include "../includes/philo.h"
 
+
 void	ft_error(int err)
 {
 	if (err == 1)
 		write(1, "malloc error\n", 16);
 	if (err == 2)
-		write(1, "not enough arguments\n", 22);
+		write(1, "Error: not enough arguments\n", 22);
 	exit(1);
 }
 

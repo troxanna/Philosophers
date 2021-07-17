@@ -10,6 +10,7 @@ void	init_philo(t_philo **philo, int l_fork, int r_fork, int id)
 	(*philo)->left_fork = l_fork;
 	(*philo)->right_fork = r_fork;
 	(*philo)->id = id;
+	(*philo)->start_eat = get_time(0);
 }
 
 void	init_table(t_table *table, int count)

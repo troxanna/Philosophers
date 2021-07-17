@@ -36,7 +36,7 @@ typedef struct s_all
 	t_philo		*philo;
 	t_table		*table;
 	t_input		*input;
-	int			death;
+	pthread_t	death;
 }				t_all;
 
 void	ft_error(int err);
