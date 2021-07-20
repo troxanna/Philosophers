@@ -31,42 +31,30 @@ void	print_message(char *str, t_philo *philo)
 	// сообщение (is eating, is sleeping, is thinking, has taken a fork, died)
 }
 
-void	philo_eat(t_all **arg)
+void	philo_eat(t_all **arg, mutex_t *first_fork, mutex_t *second_fork)
 {
 	//сделать, чтобы ели только четные/нечетные философы
 	//
-	if ((*arg)->philo->id % 2)
-	{
-		print_message("test odd", (*arg)->philo);
-		pthread_mutex_lock((*arg)->philo->right_fork);
-		printf("%p\n", (*arg)->philo->right_fork);
-		print_message("has taken right a fork", (*arg)->philo);
-		pthread_mutex_lock((*arg)->philo->left_fork);
-		printf("%p\n", (*arg)->philo->left_fork);
-		print_message("has taken left a fork", (*arg)->philo);
+	// if ((*arg)->philo->id % 2 && (*arg)->philo->id != (*arg)->input->num_of_philo)
+	// {
+		//printf("id philo %d\n", )
+		write(1, "test odd\n", 11);
+		pthread_mutex_lock(first_fork);
+		//printf("%p\n", (*arg)->philo->right_fork);
+		print_message("has taken first a fork", (*arg)->philo);
+		pthread_mutex_lock(second_fork);
+		//printf("%p\n", (*arg)->philo->left_fork);
+		print_message("has taken second a fork", (*arg)->philo);
 		(*arg)->philo->last_eat = get_time(0);
 		print_message("is eating", (*arg)->philo);
 		ft_usleep((*arg)->input->time_to_eat);
-		pthread_mutex_unlock((*arg)->philo->left_fork);
-		pthread_mutex_unlock((*arg)->philo->right_fork);
+		print_message("eating end", (*arg)->philo);
+		pthread_mutex_unlock(second_fork);
+		//printf("right fork free %p\n", (*arg)->philo->right_fork);
+		pthread_mutex_unlock(first_fork);
+		//printf("left fork free %p\n", (*arg)->philo->left_fork);
 		(*arg)->philo->count_eat++;
-	}
-	else
-	{
-		print_message("test even", (*arg)->philo);
-		pthread_mutex_lock((*arg)->philo->left_fork);
-		printf("%p\n", (*arg)->philo->left_fork);
-		print_message("has taken left a fork", (*arg)->philo);
-		pthread_mutex_lock((*arg)->philo->right_fork);
-		printf("%p\n", (*arg)->philo->right_fork);
-		print_message("has taken right a fork", (*arg)->philo);
-		print_message("is eating", (*arg)->philo);
-		(*arg)->philo->last_eat = get_time(0);
-		ft_usleep((*arg)->input->time_to_eat);
-		pthread_mutex_unlock((*arg)->philo->right_fork);
-		pthread_mutex_unlock((*arg)->philo->left_fork);
-		(*arg)->philo->count_eat++;
-	}
+	//}
 	// if (arg->philo->id % 2)
 	// {
 	// 	pthread_mutex_lock(arg->philo->right_fork);
@@ -96,7 +84,16 @@ void	*life_philo(void *arg)
 	while (start == 1)
 	{
 		//write(1, "test\n", 5);
-		philo_eat(&args);
+		//pthread_mutex_lock(&entry_point);
+		if (!(philo->id % 2) || philo->id == args->input->num_of_philo)
+		{
+			write(1, "test even\n", 10);
+			philo_eat(&args, philo->left_fork, philo->right_fork);
+		}
+		else
+		{
+			philo_eat(&args, philo->right_fork, philo->left_fork);
+		}
 		//pthread_mutex_unlock(&entry_point);
 		print_message("is sleeping", philo);
 		ft_usleep(args->input->time_to_sleep);
@@ -133,7 +130,8 @@ void	check_death_and_eat(t_all **arg, int count, int count_eat)
 				(get_time(0) - (*args)[i].philo->last_eat) > (*args)->input->time_to_die)
 			{
 				start = -1;
-				printf("last time == %ld\n", get_time(0) - (*args)[i].philo->last_eat);
+				printf("current time == %ld\n", get_time(0));
+				printf("last eat time == %ld\n", (*args)[i].philo->last_eat);
 				printf("id == %d\n", (*args)[i].philo->id);
 				//костыльно как то, подумать
 				write(1, "died\n", 5);
@@ -143,7 +141,7 @@ void	check_death_and_eat(t_all **arg, int count, int count_eat)
 					//printf("id philo == %d\n", (*args)[j].philo->id);
 					pthread_detach((*args)[j].philo->pt);
 				}
-				return ;
+				//return ;
 			}
 		}
 	}
