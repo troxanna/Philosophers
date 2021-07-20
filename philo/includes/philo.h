@@ -2,9 +2,10 @@
 # define PHILO_H
 
 # include <unistd.h>
+# include <stdio.h>
 # include <pthread.h>
 # include <sys/time.h>
-# include "../libft/libft.h"
+# include "../../libft/libft.h"
 
 typedef pthread_mutex_t mutex_t;
 
@@ -28,7 +29,8 @@ typedef struct		s_philo
 	pthread_t	pt;
 	pthread_mutex_t *left_fork;
 	pthread_mutex_t *right_fork;
-	long	start_eat;
+	long	start;
+	int		count_eat;
 	long	last_eat;
 	mutex_t	*message;
 }					t_philo;
@@ -49,7 +51,7 @@ void	init_philo(t_philo **philo, int id, mutex_t *l_fork, mutex_t *r_fork);
 void	free_philo(t_philo **philo);
 void	init_table(t_table *table, int count);
 t_all	*init_all_args(t_philo **philo, t_input *input);
-void	pthread_exec(t_all *args, int count);
+void	pthread_exec(t_all *args, int count, int count_eat);
 
 
 

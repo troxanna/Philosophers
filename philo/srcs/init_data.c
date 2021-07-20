@@ -22,8 +22,11 @@ void	init_philo(t_philo **philo, int id, mutex_t *l_fork, mutex_t *r_fork)
 	(*philo)->id = id;
 	(*philo)->left_fork = l_fork;
 	(*philo)->right_fork = r_fork;
-	(*philo)->start_eat = get_time(0);
-	(*philo)->last_eat = get_time(0);
+	(*philo)->start = 0;
+	(*philo)->last_eat = 0;
+	(*philo)->count_eat = 0;
+	printf("id: %d address: %p\n", (*philo)->id, (*philo)->left_fork);
+	printf("id: %d address: %p\n", (*philo)->id, (*philo)->right_fork);
 }
 
 // void	init_table(t_table *table, int count)

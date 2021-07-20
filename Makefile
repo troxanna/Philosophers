@@ -10,14 +10,14 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = philo
+NAME = philo_main
 
 HEAD = ./includes/
-SRCS = ./srcs/
+SRCS = ./philo/srcs/
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -g
 
-C_FILE = $(SRCS)init_data.c $(SRCS)utils.c main.c 
+C_FILE = $(SRCS)init_data.c $(SRCS)utils.c ./philo/main.c 
 
 O_FILE = $(C_FILE:.c=.o)
 
@@ -32,11 +32,11 @@ $(NAME): $(O_FILE)
 	gcc -c $(СFLAGS) $< -o $@
 
 clean:
-	@rm -f $(O_FILE)
+	@rm -f ./philo/$(O_FILE)
 	$(MAKE) -C ./libft clean
 
 fclean: clean
-	@rm -f $(NAME)
+	@rm -f ./philo/$(NAME)
 	$(MAKE) -C ./libft fclean
 
 re: fclean all
