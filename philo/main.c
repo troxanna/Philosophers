@@ -14,7 +14,7 @@ void	print_message(char *str, t_philo *philo)
 	//pthread_mutex_lock(&entry_point);
 	pthread_mutex_lock(&entry_point);
 	current_time = get_time(philo->start);
-	if (start == 1)
+	if (start > 0)
 	{
 		ft_putnbr_fd(current_time, 1);
 		ft_putchar_fd(' ', 1);
@@ -38,22 +38,40 @@ void	philo_eat(t_all **arg, mutex_t *first_fork, mutex_t *second_fork)
 	// if ((*arg)->philo->id % 2 && (*arg)->philo->id != (*arg)->input->num_of_philo)
 	// {
 		//printf("id philo %d\n", )
-		write(1, "test odd\n", 11);
+		//write(1, "test odd\n", 11);
 		pthread_mutex_lock(first_fork);
-		//printf("%p\n", (*arg)->philo->right_fork);
+		// pthread_mutex_lock(&entry_point);
+		// printf("%p\n", first_fork);
+		// pthread_mutex_unlock(&entry_point);
 		print_message("has taken first a fork", (*arg)->philo);
 		pthread_mutex_lock(second_fork);
-		//printf("%p\n", (*arg)->philo->left_fork);
+		// pthread_mutex_lock(&entry_point);
+		// printf("%p\n", second_fork);
+		// pthread_mutex_unlock(&entry_point);
 		print_message("has taken second a fork", (*arg)->philo);
-		(*arg)->philo->last_eat = get_time(0);
 		print_message("is eating", (*arg)->philo);
+		(*arg)->philo->count_eat++;
+		(*arg)->philo->last_eat = get_time(0);
 		ft_usleep((*arg)->input->time_to_eat);
 		print_message("eating end", (*arg)->philo);
-		pthread_mutex_unlock(second_fork);
-		//printf("right fork free %p\n", (*arg)->philo->right_fork);
+		//pthread_mutex_lock(&entry_point);
+		//(*arg)->philo->count_eat++;
+		//подумать как нормально можно сделать
 		pthread_mutex_unlock(first_fork);
+		usleep(100);
+		//ft_usleep(1);
+			//ft_usleep(1);
+		//pthread_mutex_lock(&entry_point);
+		//printf("fork free %p\n", second_fork);
+		//pthread_mutex_unlock(&entry_point);
+		//printf("right fork free %p\n", (*arg)->philo->right_fork);
+		//pthread_mutex_lock(&entry_point);
+		pthread_mutex_unlock(second_fork);
+		//pthread_mutex_unlock(&entry_point);
+		//pthread_mutex_lock(&entry_point);
+		//printf("fork free %p\n", first_fork);
+		//pthread_mutex_unlock(&entry_point);
 		//printf("left fork free %p\n", (*arg)->philo->left_fork);
-		(*arg)->philo->count_eat++;
 	//}
 	// if (arg->philo->id % 2)
 	// {
@@ -80,19 +98,22 @@ void	*life_philo(void *arg)
 	while (!start)
 		;
 	philo->last_eat = get_time(0);
+	//printf("%ld\n", )
 	philo->start = get_time(0);
-	while (start == 1)
+	while (start != -1)
 	{
+		//разобраться, почему с нечетным количеством философов предпоследний не берет вилки
 		//write(1, "test\n", 5);
 		//pthread_mutex_lock(&entry_point);
-		if (!(philo->id % 2) || philo->id == args->input->num_of_philo)
+		if (philo->id % 2)
 		{
 			write(1, "test even\n", 10);
-			philo_eat(&args, philo->left_fork, philo->right_fork);
-		}
-		else
-		{
 			philo_eat(&args, philo->right_fork, philo->left_fork);
+		}
+		else if (!(philo->id % 2) || (philo->id == args->input->num_of_philo && philo->id % 2))
+		{
+			write(1, "odd even\n", 10);
+			philo_eat(&args, philo->left_fork, philo->right_fork);
 		}
 		//pthread_mutex_unlock(&entry_point);
 		print_message("is sleeping", philo);
@@ -107,11 +128,12 @@ void	check_death_and_eat(t_all **arg, int count, int count_eat)
 {
 	t_all **args;
 	t_philo	*philo;
+	int i;
 
 	args = (t_all **)arg;
-	int i = -1;
-	printf("start == %d\n", start);
-	while (start == 1)
+	//int i = -1;
+	//printf("start == %d\n", start);
+	while (start != -1)
 	{
 		i = -1;
 		while (++i < count)
@@ -121,26 +143,20 @@ void	check_death_and_eat(t_all **arg, int count, int count_eat)
 				start = -1;
 				int j = -1;
 				while (++j < count)
-				{
-					//printf("id philo == %d\n", (*args)[j].philo->id);
 					pthread_detach((*args)[j].philo->pt);
-				}
 			}
 			if ((*args)[i].philo->last_eat &&
 				(get_time(0) - (*args)[i].philo->last_eat) > (*args)->input->time_to_die)
 			{
 				start = -1;
-				printf("current time == %ld\n", get_time(0));
-				printf("last eat time == %ld\n", (*args)[i].philo->last_eat);
-				printf("id == %d\n", (*args)[i].philo->id);
-				//костыльно как то, подумать
-				write(1, "died\n", 5);
+				//printf("last eat time == %ld\n", get_time(0) - (*args)[i].philo->last_eat);
+				//printf("dead time == %ld\n", get_time((*args)[i].philo->start));
+				//printf("id == %d\n", (*args)[i].philo->id);
+				////костыльно как то, подумать
+				//write(1, "died\n", 5);
 				int j = -1;
 				while (++j < count)
-				{
-					//printf("id philo == %d\n", (*args)[j].philo->id);
 					pthread_detach((*args)[j].philo->pt);
-				}
 				//return ;
 			}
 		}
