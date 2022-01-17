@@ -12,6 +12,13 @@
 
 #include "includes/philo_bonus.h"
 
+void	ft_free(t_philo *philo)
+{
+	free(philo[0].input);
+	free(philo[0].sem);
+	free(philo);
+}
+
 static void	wait_processes(t_philo *philo, int cur_count, int count)
 {
 	int	i;
@@ -53,5 +60,6 @@ int	main(int argc, char **argv)
 			philo_life(&philo[i]);
 	}
 	wait_processes(philo, count, count);
+	ft_free(philo);
 	return (0);
 }
